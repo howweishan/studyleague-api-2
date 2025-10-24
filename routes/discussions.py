@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers import DiscussionController, DiscussionReplyController
+from controllers import DiscussionController
 from services.pocketbase_service import pocketbase_service
 from schemas import DiscussionSchema, DiscussionReplySchema
 from marshmallow import ValidationError
@@ -7,9 +7,7 @@ from utils.auth import require_auth, get_auth_token_from_header
 
 # Use the global service instance
 discussion_controller = DiscussionController(pocketbase_service)
-reply_controller = DiscussionReplyController(pocketbase_service)
 discussion_schema = DiscussionSchema()
-reply_schema = DiscussionReplySchema()
 
 discussions_bp = Blueprint('discussions', __name__, url_prefix='/api/discussions')
 
@@ -107,7 +105,7 @@ def delete_discussion(discussion_id):
 def get_discussion_replies(discussion_id):
     """Get replies for a discussion"""
     try:
-        replies = reply_controller.get_discussion_replies(discussion_id)
+        replies = discussion_controller.get_replies(discussion_id)
         return jsonify(replies), 200
     
     except Exception as e:

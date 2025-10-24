@@ -1,15 +1,14 @@
 from flask import Blueprint, request, jsonify
-from controllers import AchievementController, UserAchievementController
+from controllers import AchievementController
 from services.pocketbase_service import pocketbase_service
-from schemas import AchievementSchema, UserAchievementSchema
+from schemas import AchievementSchema
 from marshmallow import ValidationError
-from utils.auth import require_auth, get_auth_token_from_header
+from utils.auth import require_auth
+from typing import Dict, Any, cast
 
 # Use the global service instance
 achievement_controller = AchievementController(pocketbase_service)
-user_achievement_controller = UserAchievementController(pocketbase_service)
 achievement_schema = AchievementSchema()
-user_achievement_schema = UserAchievementSchema()
 
 achievements_bp = Blueprint('achievements', __name__, url_prefix='/api/achievements')
 
@@ -25,6 +24,7 @@ def get_achievements():
         return jsonify({'error': str(e)}), 500
 
 @achievements_bp.route('/<achievement_id>', methods=['GET'])
+@require_auth
 def get_achievement(achievement_id):
     """Get achievement by ID"""
     try:
@@ -42,13 +42,14 @@ def get_achievement(achievement_id):
 def get_user_achievements(user_id):
     """Get achievements for a specific user"""
     try:
-        achievements = user_achievement_controller.get_user_achievements(user_id)
+        achievements = achievement_controller.get_user_achievements(user_id)
         return jsonify(achievements), 200
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+    
 @achievements_bp.route('/unlock', methods=['POST'])
+@require_auth
 def unlock_achievement():
     """Unlock an achievement for a user"""
     try:
@@ -57,11 +58,10 @@ def unlock_achievement():
             return jsonify({'error': 'User and achievement IDs required'}), 400
         
         # Validate data
-        validated_data = user_achievement_schema.load(data)
-        
-        user_achievement = user_achievement_controller.create(validated_data)
-        if user_achievement:
-            return jsonify(user_achievement), 201
+        validated_data = cast(Dict[str, Any], achievement_schema.load(data))
+        achievement = achievement_controller.create(validated_data)
+        if achievement:
+            return jsonify(achievement), 201
         else:
             return jsonify({'error': 'Failed to unlock achievement'}), 500
     
@@ -71,6 +71,7 @@ def unlock_achievement():
         return jsonify({'error': str(e)}), 500
 
 @achievements_bp.route('/', methods=['POST'])
+@require_auth
 def create_achievement():
     """Create a new achievement (admin only)"""
     try:
@@ -79,7 +80,7 @@ def create_achievement():
             return jsonify({'error': 'No data provided'}), 400
         
         # Validate data
-        validated_data = achievement_schema.load(data)
+        validated_data = cast(Dict[str, Any], achievement_schema.load(data))
         
         achievement = achievement_controller.create(validated_data)
         if achievement:
@@ -93,6 +94,7 @@ def create_achievement():
         return jsonify({'error': str(e)}), 500
 
 @achievements_bp.route('/<achievement_id>', methods=['PUT'])
+@require_auth
 def update_achievement(achievement_id):
     """Update achievement (admin only)"""
     try:
@@ -101,7 +103,7 @@ def update_achievement(achievement_id):
             return jsonify({'error': 'No data provided'}), 400
         
         # Validate data (partial update)
-        validated_data = achievement_schema.load(data, partial=True)
+        validated_data = cast(Dict[str, Any], achievement_schema.load(data, partial=True))
         
         achievement = achievement_controller.update(achievement_id, validated_data)
         if achievement:
@@ -115,6 +117,7 @@ def update_achievement(achievement_id):
         return jsonify({'error': str(e)}), 500
 
 @achievements_bp.route('/<achievement_id>', methods=['DELETE'])
+@require_auth
 def delete_achievement(achievement_id):
     """Delete achievement (admin only)"""
     try:

@@ -7,8 +7,6 @@ from pocketbase import PocketBase
 from pocketbase.errors import ClientResponseError
 from typing import Optional, Dict, Any, Union
 import os
-import json
-
 
 def serialize_record(record) -> Dict[str, Any]:
     """Helper function to properly serialize PocketBase records including expanded relations"""
@@ -43,7 +41,7 @@ class PocketBaseService:
 		self.base_url = base_url or os.getenv('POCKETBASE_URL', 'http://127.0.0.1:8090')
 		self.pb = PocketBase(self.base_url)
 	
-	def authenticate_user(self, email: str, password: str) -> Dict[str, Any]:
+	def authenticate(self, email: str, password: str) -> Dict[str, Any]:
 		"""
 		Authenticate user with email/password
 		Equivalent to: pb.collection("users").authWithPassword(email, password)
@@ -160,36 +158,6 @@ class PocketBaseService:
 			return serialize_record(record)
 		except ClientResponseError as e:
 			raise Exception(f"Failed to get record: {e}")
-		
-	def get_records(self, collection: str, filter_query: str = "", sort: str = "", 
-					page: int = 1, per_page: int = 30, expand: Optional[str] = None) -> Dict[str, Any]:
-		"""Get multiple records with optional filtering, sorting, and pagination"""
-		try:
-			query_params = {
-				'filter': filter_query,
-				'sort': sort
-			}
-			if expand:
-				query_params['expand'] = expand
-				
-			result = self.pb.collection(collection).get_list(
-				page=page,
-				per_page=per_page,
-				query_params=query_params
-			)
-
-			return {
-				'page': result.page,
-				'per_page': result.per_page,
-				'total_items': result.total_items,
-				'total_pages': result.total_pages,
-				'items': [serialize_record(item) for item in result.items]
-			}
-			
-		except ClientResponseError as e:
-			raise Exception(f"Failed to get records: {e}")
-		except Exception as e:
-			raise Exception(f"Failed to get records: {e}")
 	
 	def update_record(self, collection: str, record_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
 		"""Update a record"""

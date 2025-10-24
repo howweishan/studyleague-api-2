@@ -3,7 +3,7 @@ from controllers import StudySessionController
 from services.pocketbase_service import pocketbase_service
 from schemas import StudySessionSchema
 from marshmallow import ValidationError
-from utils.auth import require_auth, get_auth_token_from_header
+from utils.auth import require_auth
 
 # Use the global service instance
 session_controller = StudySessionController(pocketbase_service)

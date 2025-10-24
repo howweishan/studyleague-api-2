@@ -10,9 +10,12 @@ from routes.rooms import rooms_bp
 from routes.achievements import achievements_bp
 from routes.discussions import discussions_bp
 from routes.leaderboard import leaderboard_bp
+from routes.statistics import statistics_bp
 
 def create_app(config_name=None):
-    """Application factory pattern"""
+    """Main Application"""
+    
+    # Determine configuration
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'default')
     
@@ -21,7 +24,6 @@ def create_app(config_name=None):
     
     # Enable CORS
     CORS(app, resources={r"/*": {"origins": "*"}})
-
     
     # Register blueprints
     app.register_blueprint(users_bp)
@@ -43,17 +45,8 @@ def create_app(config_name=None):
     @app.route('/')
     def root():
         return jsonify({
-            'message': 'Welcome to StudyLeague API',
-            'version': '1.0.0',
-            'endpoints': {
-                'users': '/api/users',
-                'sessions': '/api/sessions',
-                'rooms': '/api/rooms',
-                'achievements': '/api/achievements',
-                'discussions': '/api/discussions',
-                'leaderboard': '/api/leaderboard'
-            }
-        }), 200
+            'message': 'You are not allowed to access this resource!'
+        }), 403
     
     # Error handlers
     @app.errorhandler(404)

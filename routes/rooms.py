@@ -16,6 +16,7 @@ rooms_bp = Blueprint('rooms', __name__, url_prefix='/api/rooms')
 @require_auth
 def get_rooms():
     """Get study rooms with optional filtering"""
+    
     try:
         public_only = request.args.get('public', 'false').lower() == 'true'
         host_id = request.args.get('host_id')
@@ -47,7 +48,7 @@ def get_room(room_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@rooms_bp.route('/', methods=['POST'])
+@rooms_bp.route('/create', methods=['POST'])
 def create_room():
     """Create a new study room"""
     try:

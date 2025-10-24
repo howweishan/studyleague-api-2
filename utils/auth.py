@@ -49,7 +49,7 @@ def ensure_authenticated():
     """Ensure the current request is authenticated, return user info if valid"""
     token = get_auth_token_from_header()
     if not token:
-        return None, jsonify({'error': 'Authorization token required'}), 401
+        return None, jsonify({'error': 'Authorization token required.'}), 401
     
     try:
         # Verify token and get user info
@@ -57,6 +57,6 @@ def ensure_authenticated():
         if verification.get('valid'):
             return verification.get('user'), None, None
         else:
-            return None, jsonify({'error': 'Invalid or expired token'}), 401
+            return None, jsonify({'error': 'Invalid token. Please log in again.'}), 401
     except Exception as e:
         return None, jsonify({'error': f'Authentication failed: {str(e)}'}), 401
