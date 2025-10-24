@@ -1,13 +1,18 @@
 from flask import Blueprint, request, jsonify
-from controllers import DiscussionController
-from services.pocketbase_service import pocketbase_service
+from controllers import DiscussionController, DiscussionReplyController
 from schemas import DiscussionSchema, DiscussionReplySchema
+from services.pocketbase_service import pocketbase_service
 from marshmallow import ValidationError
-from utils.auth import require_auth, get_auth_token_from_header
+from utils.auth import require_auth
 
-# Use the global service instance
-discussion_controller = DiscussionController(pocketbase_service)
+# Schemas
 discussion_schema = DiscussionSchema()
+discussion_reply_schema = DiscussionReplySchema()
+
+# Controllers
+discussion_controller = DiscussionController(pocketbase_service)
+discussion_reply_controller = DiscussionReplyController(pocketbase_service)
+
 
 discussions_bp = Blueprint('discussions', __name__, url_prefix='/api/discussions')
 
