@@ -3,6 +3,7 @@ from .BaseSchema import BaseSchema
 from .UserSchema import UserSchema
 from .StudySessionSchema import StudySessionSchema
 from .StudyRoomSchema import StudyRoomSchema
+from .StudyTargetSchema import StudyTargetSchema
 from .AchievementSchema import AchievementSchema
 from .UserAchievementSchema import UserAchievementSchema
 from .DiscussionSchema import DiscussionSchema
@@ -14,6 +15,7 @@ __all__ = [
     "UserSchema",
     "StudySessionSchema",
     "StudyRoomSchema",
+    "StudyTargetSchema",
     "AchievementSchema",
     "UserAchievementSchema",
     "DiscussionSchema",

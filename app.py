@@ -11,6 +11,7 @@ from routes.achievements import achievements_bp
 from routes.discussions import discussions_bp
 from routes.leaderboard import leaderboard_bp
 from routes.statistics import statistics_bp
+from routes.targets import target_bp
 
 def create_app(config_name=None):
     """Main Application"""
@@ -32,6 +33,8 @@ def create_app(config_name=None):
     app.register_blueprint(achievements_bp)
     app.register_blueprint(discussions_bp)
     app.register_blueprint(leaderboard_bp)
+    app.register_blueprint(statistics_bp)
+    app.register_blueprint(target_bp)
     
     # Health check endpoint
     @app.route('/health')

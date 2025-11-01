@@ -1,19 +1,19 @@
 from flask import Blueprint, request, jsonify
-from controllers import StudySessionController
+from controllers import StudySessionController, StatisticsController
 from services.pocketbase_service import pocketbase_service
 from schemas import StudySessionSchema
 from marshmallow import ValidationError
-from utils.auth import require_auth, get_auth_token_from_header
+from utils.auth import require_auth
 
 statistics_bp = Blueprint('statistics', __name__, url_prefix='/api/statistics')
 
-@statistics_bp.route('/user/<user_id>', methods=['GET'])
+@statistics_bp.route('/', methods=['GET'], strict_slashes=False)
 @require_auth
-def get_user_statistics(user_id):
-	"""Get statistics for a specific user"""
+def get_today_statistics():
+	"""Get today's statistics"""
 	try:
-		session_controller = StudySessionController(pocketbase_service)
-		stats = session_controller.get_user_statistics(user_id)
+		statistics_controller = StatisticsController(pocketbase_service)
+		stats = statistics_controller.get_today_statistics()
 		return jsonify(stats), 200
 	
 	except Exception as e:

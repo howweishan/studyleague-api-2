@@ -73,10 +73,21 @@ class PocketBaseService:
 	
 	def set_auth_token(self, token: str) -> None:
 		"""
-		Set authentication token manually
+		Set authentication token manually and fetch user model
 		Equivalent to: pb.authStore.save(token, model)
 		"""
-		self.pb.auth_store.save(token, None)
+		try:
+			# First, save the token temporarily
+			self.pb.auth_store.save(token, None)
+			
+			# Then refresh to get the user model
+			auth_data = self.pb.collection("users").auth_refresh()
+			
+			# Now save both token and model
+			self.pb.auth_store.save(token, auth_data.record)
+		except ClientResponseError:
+			# If refresh fails, just save the token without model
+			self.pb.auth_store.save(token, None)
 	
 	def get_auth_token(self) -> Optional[str]:
 		"""
@@ -106,6 +117,15 @@ class PocketBaseService:
 		"""
 		if self.pb.auth_store.model:
 			return serialize_record(self.pb.auth_store.model)
+		return None
+	
+	def get_auth_user_id(self) -> Optional[str]:
+		"""
+		Get current authenticated user's ID
+		Returns the user ID from the auth store if available
+		"""
+		if self.pb.auth_store.model and hasattr(self.pb.auth_store.model, 'id'):
+			return self.pb.auth_store.model.id
 		return None
 	
 	def verify_token(self, token: str) -> Dict[str, Any]:

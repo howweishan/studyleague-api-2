@@ -10,4 +10,4 @@ class LeaderboardController(BaseController):
     
     def get_leaderboard(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get leaderboard top users"""
-        return self.get_all(filter_query="", sort="-monthTotal", per_page=limit, expand="user")
+        return self.get_all(filter_query="", sort="-total_day", per_page=limit, expand="user")
