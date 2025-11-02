@@ -6,7 +6,7 @@ load_dotenv()
 class Config:
     """Base configuration class"""
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    POCKETBASE_URL = os.getenv('POCKETBASE_URL', 'http://localhost:8090')
+    POCKETBASE_URL = os.getenv('PROD_POCKETBASE_URL', 'http://localhost:8090')
 
 class DevelopmentConfig(Config):
     """Development configuration"""
