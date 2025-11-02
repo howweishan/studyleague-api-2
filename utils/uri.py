@@ -1,5 +1,5 @@
 import os
-base_url = os.getenv('POCKETBASE_URL', 'http://127.0.0.1:8090')
+base_url = os.getenv('PROD_POCKETBASE_URL', 'http://127.0.0.1:8090')
 
 # casted from ${POCKETBASE_URL}/api/files/study_rooms/${room.id}/${room.thumbnail}`
 def cast_image_uri(file_name: str, collection_name: str, record_id: str) -> str:
